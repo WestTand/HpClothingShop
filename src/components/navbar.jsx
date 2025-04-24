@@ -15,12 +15,10 @@ export default function Navbar() {
     <header className="border-b">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <Link to="/" className="text-xl font-bold">
-            Visily
+            HpClothingShop
           </Link>
 
-          {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link to="/" className="hover:text-purple-600">
               Home
@@ -36,7 +34,7 @@ export default function Navbar() {
             </Link>
           </nav>
 
-          {/* Icons */}
+
           <div className="flex items-center space-x-4">
             <button aria-label="Search" className="p-1">
               <Search size={20} />
@@ -54,7 +52,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+
       {isMenuOpen && (
         <div className="md:hidden border-t">
           <nav className="flex flex-col px-4 py-2">
