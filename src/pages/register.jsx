@@ -1,10 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Eye, EyeOff } from "lucide-react"
+import { createUserWithEmailAndPassword } from "firebase/auth"
+import { auth, googleProvider } from "../config/firebase_config"
+import { signInWithPopup } from "firebase/auth"
 
 export default function Register() {
+  const navigate = useNavigate()
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -29,65 +34,92 @@ export default function Register() {
     const newErrors = {}
 
     if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required"
+      newErrors.firstName = "Vui lòng nhập họ"
     }
 
     if (!formData.lastName.trim()) {
-      newErrors.lastName = "Last name is required"
+      newErrors.lastName = "Vui lòng nhập tên"
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required"
+      newErrors.email = "Vui lòng nhập email"
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid"
+      newErrors.email = "Email không hợp lệ"
     }
 
     if (!formData.password) {
-      newErrors.password = "Password is required"
+      newErrors.password = "Vui lòng nhập mật khẩu"
     } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters"
+      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự"
     }
 
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match"
+      newErrors.confirmPassword = "Mật khẩu xác nhận không khớp"
     }
 
     if (!formData.agreeTerms) {
-      newErrors.agreeTerms = "You must agree to the terms and conditions"
+      newErrors.agreeTerms = "Bạn phải đồng ý với điều khoản sử dụng"
     }
 
     return newErrors
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const newErrors = validate()
 
     if (Object.keys(newErrors).length === 0) {
-      // Handle registration logic here
-      console.log("Form submitted:", formData)
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password
+        )
+        const user = userCredential.user
+        console.log("Tạo tài khoản thành công:", user)
+
+        alert("Đăng ký tài khoản thành công!")
+        navigate("/login")
+      } catch (error) {
+        console.error("Lỗi khi tạo tài khoản:", error)
+        setErrors({ firebase: "Email đã tồn tại hoặc có lỗi xảy ra!" })
+      }
     } else {
       setErrors(newErrors)
+    }
+  }
+
+  // Hàm đăng ký với Google
+  const handleGoogleSignUp = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      const user = result.user
+      console.log("Đăng ký với Google thành công:", user)
+      alert("Đăng ký với Google thành công!")
+      navigate("/login") // Chuyển đến trang dashboard hoặc trang bạn muốn sau khi đăng ký
+    } catch (error) {
+      console.error("Lỗi khi đăng ký với Google:", error)
+      setErrors({ firebase: "Đăng ký với Google thất bại!" })
     }
   }
 
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center mb-6">Create an Account</h1>
+        <h1 className="text-2xl font-bold text-center mb-6">Đăng Ký Tài Khoản</h1>
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-                First Name
+                Họ
               </label>
               <input
                 type="text"
                 id="firstName"
                 name="firstName"
                 className={`w-full px-3 py-2 border ${errors.firstName ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600`}
-                placeholder="John"
+                placeholder="Nguyễn"
                 value={formData.firstName}
                 onChange={handleChange}
               />
@@ -96,14 +128,14 @@ export default function Register() {
 
             <div>
               <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-                Last Name
+                Tên
               </label>
               <input
                 type="text"
                 id="lastName"
                 name="lastName"
                 className={`w-full px-3 py-2 border ${errors.lastName ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600`}
-                placeholder="Doe"
+                placeholder="Văn A"
                 value={formData.lastName}
                 onChange={handleChange}
               />
@@ -113,14 +145,14 @@ export default function Register() {
 
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
+              Email
             </label>
             <input
               type="email"
               id="email"
               name="email"
               className={`w-full px-3 py-2 border ${errors.email ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600`}
-              placeholder="john.doe@example.com"
+              placeholder="example@gmail.com"
               value={formData.email}
               onChange={handleChange}
             />
@@ -129,7 +161,7 @@ export default function Register() {
 
           <div className="mb-4">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
+              Mật khẩu
             </label>
             <div className="relative">
               <input
@@ -137,7 +169,7 @@ export default function Register() {
                 id="password"
                 name="password"
                 className={`w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600`}
-                placeholder="••••••••"
+                placeholder="Nhập mật khẩu"
                 value={formData.password}
                 onChange={handleChange}
               />
@@ -154,7 +186,7 @@ export default function Register() {
 
           <div className="mb-6">
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm Password
+              Xác nhận mật khẩu
             </label>
             <div className="relative">
               <input
@@ -162,7 +194,7 @@ export default function Register() {
                 id="confirmPassword"
                 name="confirmPassword"
                 className={`w-full px-3 py-2 border ${errors.confirmPassword ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600`}
-                placeholder="••••••••"
+                placeholder="Nhập lại mật khẩu"
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
@@ -191,13 +223,13 @@ export default function Register() {
               </div>
               <div className="ml-3 text-sm">
                 <label htmlFor="agreeTerms" className="font-medium text-gray-700">
-                  I agree to the{" "}
+                  Tôi đồng ý với{" "}
                   <Link to="/terms" className="text-purple-600 hover:text-purple-500">
-                    Terms and Conditions
+                    Điều khoản dịch vụ
                   </Link>{" "}
-                  and{" "}
+                  và{" "}
                   <Link to="/privacy" className="text-purple-600 hover:text-purple-500">
-                    Privacy Policy
+                    Chính sách bảo mật
                   </Link>
                 </label>
                 {errors.agreeTerms && <p className="mt-1 text-xs text-red-500">{errors.agreeTerms}</p>}
@@ -209,38 +241,40 @@ export default function Register() {
             type="submit"
             className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
           >
-            Create Account
+            Đăng ký
           </button>
+
+          {errors.firebase && <p className="mt-2 text-sm text-red-500 text-center">{errors.firebase}</p>}
         </form>
 
+        {/* Dòng phân cách */}
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or sign up with</span>
+              <span className="px-2 bg-white text-gray-500">Hoặc tiếp tục với</span>
             </div>
           </div>
 
           <div className="mt-6 grid grid-cols gap-3">
-            <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-              <span className="sr-only">Sign up with Google</span>
+            <button
+              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              onClick={handleGoogleSignUp}
+            >
+              <span className="sr-only">Đăng ký với Google</span>
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
               </svg>
             </button>
-
-
-
-
           </div>
         </div>
 
         <p className="mt-8 text-center text-sm text-gray-600">
-          Already have an account?{" "}
+          Đã có tài khoản?{" "}
           <Link to="/login" className="font-medium text-purple-600 hover:text-purple-500">
-            Sign in
+            Đăng nhập
           </Link>
         </p>
       </div>
