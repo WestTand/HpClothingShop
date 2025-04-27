@@ -1,14 +1,13 @@
-import CartItem from "../components/cart-item"
+import CartItem from "../components/cart-item";
+import { useCart } from "../context/CartContext";
 
 export default function Cart() {
-  const cartItems = [
-    { id: 1, name: "Product Name", price: "$99.99", quantity: 1 },
-    { id: 2, name: "Product Name", price: "$79.99", quantity: 2 },
-  ]
+  const { cartItems } = useCart();
 
-  const subtotal = "$259.97"
-  const shipping = "$9.99"
-  const total = "$269.96"
+  // Tính tiền
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const shipping = 10000; // tùy bạn
+  const total = subtotal + shipping;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -16,9 +15,13 @@ export default function Cart() {
 
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="lg:w-2/3">
-          {cartItems.map((item) => (
-            <CartItem key={item.id} item={item} />
-          ))}
+          {cartItems.length === 0 ? (
+            <p>Giỏ hàng trống 😭</p>
+          ) : (
+            cartItems.map((item) => (
+              <CartItem key={item.id} item={item} />
+            ))
+          )}
         </div>
 
         <div className="lg:w-1/3 bg-gray-50 p-6 rounded-lg h-fit">
@@ -27,15 +30,15 @@ export default function Cart() {
           <div className="space-y-3 mb-6">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span>{subtotal}</span>
+              <span>{subtotal.toLocaleString()} đ</span>
             </div>
             <div className="flex justify-between">
               <span>Shipping</span>
-              <span>{shipping}</span>
+              <span>{shipping.toLocaleString()} đ</span>
             </div>
             <div className="flex justify-between font-semibold">
               <span>Total</span>
-              <span>{total}</span>
+              <span>{total.toLocaleString()} đ</span>
             </div>
           </div>
 
