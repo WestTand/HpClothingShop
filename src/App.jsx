@@ -10,7 +10,8 @@ import AllProducts from "./pages/all-products";
 import Cart from "./pages/cart";
 import Login from "./pages/login";
 import Register from "./pages/register";
-
+import Admin from "./pages/admin";
+import AdminLogin from "./pages/adminLogin"; // Trang đăng nhập của Admin
 function App() {
   return (
     <CartProvider>
@@ -26,6 +27,12 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+
+              {/* Thêm các route cho Admin */}
+              <Route path="/admin" element={<Admin />} />  {/* Trang Dashboard của Admin */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+
+
             </Routes>
           </main>
           <Footer />
