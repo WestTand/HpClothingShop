@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
+    "axios": "^1.9.0",
+    "cloudinary": "^2.6.0",
     "firebase": "^11.6.1",
     "lucide-react": "^0.488.0",
     "my-app": "file:",
