@@ -3,9 +3,11 @@
 import { Link } from "react-router-dom"
 import { ShoppingCart, Search, User, Menu } from "lucide-react"
 import { useState } from "react"
+import { useCart } from "../context/CartContext" // 👈 nhớ import CartContext nhé
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { cartItems, isAdded } = useCart(); // 👈 lấy cartItems + hiệu ứng isAdded
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -20,20 +22,11 @@ export default function Navbar() {
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="hover:text-purple-600">
-              Home
-            </Link>
-            <Link to="/womens-collection" className="hover:text-purple-600">
-              Women
-            </Link>
-            <Link to="/mens-collection" className="hover:text-purple-600">
-              Men
-            </Link>
-            <Link to="/all-products" className="hover:text-purple-600">
-              Shop
-            </Link>
+            <Link to="/" className="hover:text-purple-600">Home</Link>
+            <Link to="/womens-collection" className="hover:text-purple-600">Women</Link>
+            <Link to="/mens-collection" className="hover:text-purple-600">Men</Link>
+            <Link to="/all-products" className="hover:text-purple-600">Shop</Link>
           </nav>
-
 
           <div className="flex items-center space-x-4">
             <button aria-label="Search" className="p-1">
@@ -42,9 +35,23 @@ export default function Navbar() {
             <Link to="/login" aria-label="Account" className="p-1">
               <User size={20} />
             </Link>
-            <Link to="/cart" aria-label="Cart" className="p-1">
-              <ShoppingCart size={20} />
+
+            {/* Cart Icon */}
+            <Link to="/cart" aria-label="Cart" className="p-1 relative">
+              <ShoppingCart size={24} />
+
+              {/* Badge số lượng */}
+              {cartItems.length > 0 && (
+                <span
+                  className={`absolute -top-2 -right-2 bg-purple-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold
+                  ${isAdded ? "bg-red-500 animate-bounce" : ""}`} // 👈 hiệu ứng đỏ + nhảy khi thêm
+                >
+                  {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+                </span>
+              )}
             </Link>
+
+            {/* Mobile Menu Button */}
             <button aria-label="Menu" className="p-1 md:hidden" onClick={toggleMenu}>
               <Menu size={20} />
             </button>
@@ -52,28 +59,16 @@ export default function Navbar() {
         </div>
       </div>
 
-
+      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden border-t">
           <nav className="flex flex-col px-4 py-2">
-            <Link to="/" className="py-2 hover:text-purple-600" onClick={() => setIsMenuOpen(false)}>
-              Home
-            </Link>
-            <Link to="/womens-collection" className="py-2 hover:text-purple-600" onClick={() => setIsMenuOpen(false)}>
-              Women
-            </Link>
-            <Link to="/mens-collection" className="py-2 hover:text-purple-600" onClick={() => setIsMenuOpen(false)}>
-              Men
-            </Link>
-            <Link to="/all-products" className="py-2 hover:text-purple-600" onClick={() => setIsMenuOpen(false)}>
-              Shop
-            </Link>
-            <Link to="/login" className="py-2 hover:text-purple-600" onClick={() => setIsMenuOpen(false)}>
-              Login
-            </Link>
-            <Link to="/register" className="py-2 hover:text-purple-600" onClick={() => setIsMenuOpen(false)}>
-              Register
-            </Link>
+            <Link to="/" className="py-2 hover:text-purple-600" onClick={() => setIsMenuOpen(false)}>Home</Link>
+            <Link to="/womens-collection" className="py-2 hover:text-purple-600" onClick={() => setIsMenuOpen(false)}>Women</Link>
+            <Link to="/mens-collection" className="py-2 hover:text-purple-600" onClick={() => setIsMenuOpen(false)}>Men</Link>
+            <Link to="/all-products" className="py-2 hover:text-purple-600" onClick={() => setIsMenuOpen(false)}>Shop</Link>
+            <Link to="/login" className="py-2 hover:text-purple-600" onClick={() => setIsMenuOpen(false)}>Login</Link>
+            <Link to="/register" className="py-2 hover:text-purple-600" onClick={() => setIsMenuOpen(false)}>Register</Link>
           </nav>
         </div>
       )}

@@ -4,8 +4,9 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Eye, EyeOff } from "lucide-react"
 import { createUserWithEmailAndPassword } from "firebase/auth"
-import { auth, googleProvider } from "../config/firebase_config"
+import { auth, googleProvider, db } from "../config/firebase_config"
 import { signInWithPopup } from "firebase/auth"
+import { setDoc, doc } from "firebase/firestore";
 
 export default function Register() {
   const navigate = useNavigate()
@@ -65,43 +66,63 @@ export default function Register() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    const newErrors = validate()
+    e.preventDefault();
+    const newErrors = validate();
 
     if (Object.keys(newErrors).length === 0) {
       try {
+        // Tạo người dùng với email và mật khẩu
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           formData.email,
           formData.password
-        )
-        const user = userCredential.user
-        console.log("Tạo tài khoản thành công:", user)
+        );
+        const user = userCredential.user;
+        console.log("Tạo tài khoản thành công:", user);
 
-        alert("Đăng ký tài khoản thành công!")
-        navigate("/login")
+        // Lưu thông tin người dùng vào Firestore
+        await setDoc(doc(db, "users", user.uid), {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          role: "user", // Bạn có thể thay đổi giá trị role nếu cần
+        });
+
+        alert("Đăng ký tài khoản thành công!");
+        navigate("/login"); // Điều hướng người dùng đến trang đăng nhập sau khi đăng ký
       } catch (error) {
-        console.error("Lỗi khi tạo tài khoản:", error)
-        setErrors({ firebase: "Email đã tồn tại hoặc có lỗi xảy ra!" })
+        console.error("Lỗi khi tạo tài khoản:", error);
+        setErrors({ firebase: "Email đã tồn tại hoặc có lỗi xảy ra!" });
       }
     } else {
-      setErrors(newErrors)
+      setErrors(newErrors);
     }
-  }
+  };
 
+  // Hàm đăng ký với Google
   // Hàm đăng ký với Google
   const handleGoogleSignUp = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider)
-      const user = result.user
-      console.log("Đăng ký với Google thành công:", user)
-      alert("Đăng ký với Google thành công!")
-      navigate("/login") // Chuyển đến trang dashboard hoặc trang bạn muốn sau khi đăng ký
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      console.log("Đăng ký với Google thành công:", user);
+
+      // Lưu thông tin người dùng vào Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        firstName: user.displayName?.split(" ")[0] || "NoFirstName", // Lấy phần đầu của displayName làm firstName
+        lastName: user.displayName?.split(" ")[1] || "NoLastName", // Lấy phần sau của displayName làm lastName
+        email: user.email,
+        role: "user", // Bạn có thể thay đổi giá trị role nếu cần
+      });
+
+      alert("Đăng ký với Google thành công!");
+      navigate("/login"); // Điều hướng người dùng đến trang đăng nhập sau khi đăng ký
     } catch (error) {
-      console.error("Lỗi khi đăng ký với Google:", error)
-      setErrors({ firebase: "Đăng ký với Google thất bại!" })
+      console.error("Lỗi khi đăng ký với Google:", error);
+      setErrors({ firebase: "Đăng ký với Google thất bại!" });
     }
-  }
+  };
+
 
   return (
     <div className="container mx-auto px-4 py-12">
