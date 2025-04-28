@@ -93,15 +93,6 @@ export default function Admin() {
                                     Users
                                 </button>
                             </li>
-                            <li className="mb-2">
-                                <button
-                                    className={`w-full text-left px-4 py-2 rounded ${activeTab === "settings" ? "bg-[#8755f2] text-white" : "hover:bg-gray-200"
-                                        }`}
-                                    onClick={() => setActiveTab("settings")}
-                                >
-                                    Settings
-                                </button>
-                            </li>
                         </ul>
                     </nav>
                 </div>

@@ -4,7 +4,7 @@ export default function CartItem({ item }) {
   return (
     <div className="flex items-center gap-4 py-4 border-b">
       <div className="relative w-20 h-20 bg-gray-100 flex-shrink-0">
-        <img src="/placeholder.svg?height=80&width=80" alt={item.name} className="w-full h-full object-cover" />
+        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
       </div>
 
       <div className="flex-1">
