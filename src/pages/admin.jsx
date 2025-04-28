@@ -37,7 +37,7 @@ export default function Admin() {
 
     const handleLogout = () => {
         localStorage.removeItem("adminLoggedIn");
-        navigate("/admin/login");
+        navigate("/login");
     };
 
     return (
