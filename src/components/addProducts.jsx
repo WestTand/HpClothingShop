@@ -6,7 +6,9 @@ export default function AddProduct() {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState("");
-    const [stock, setStock] = useState("");
+    const [stock, setStock] = useState({
+        S: 0, M: 0, L: 0, XL: 0, // Khởi tạo số lượng cho từng size
+    });
     const [imageUrl, setImageUrl] = useState(""); // Lưu trữ URL hình ảnh
     const [category, setCategory] = useState("Áo");
 
@@ -15,13 +17,13 @@ export default function AddProduct() {
         const file = event.target.files[0];
         const formData = new FormData();
         formData.append("file", file);  // Thêm tệp vào FormData
-        formData.append("upload_preset", "ml_default"); 
-        formData.append("cloud_name", "deq1douln");  
+        formData.append("upload_preset", "ml_default");
+        formData.append("cloud_name", "deq1douln");
 
         try {
             const response = await fetch("https://api.cloudinary.com/v1_1/deq1douln/image/upload", {
                 method: "POST",
-                body: formData, 
+                body: formData,
             });
             const data = await response.json();
 
@@ -36,30 +38,44 @@ export default function AddProduct() {
         }
     };
 
+    // Hàm cập nhật stock theo size
+    const handleStockChange = (size, value) => {
+        setStock(prevStock => ({
+            ...prevStock,
+            [size]: value,
+        }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!name || !description || !price || !stock || !imageUrl) {
-            alert("Vui lòng điền đầy đủ thông tin");
+        if (!name || !description || !price || !Object.values(stock).some((value) => value > 0) || !imageUrl) {
+            alert("Vui lòng điền đầy đủ thông tin và đảm bảo có ít nhất một size có stock");
             return;
         }
 
         // Lưu sản phẩm vào Firestore
         try {
-            // Cập nhật cú pháp đúng với Firestore v9+
             const docRef = await addDoc(collection(db, "products"), {
                 name,
                 description,
-                price: parseInt(price),
-                stock: parseInt(stock),
+                price: parseInt(price), // Chuyển giá thành số nguyên
+                stock, // Lưu stock cho từng size
                 imageUrl,
                 category,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
             alert("Sản phẩm đã được thêm thành công!");
+            setName("");  // Reset form sau khi thêm
+            setDescription("");
+            setPrice("");
+            setStock({ S: 0, M: 0, L: 0, XL: 0 });  // Reset stock cho các size
+            setImageUrl("");
+            setCategory("Áo");
         } catch (error) {
             console.error("Error adding product: ", error);
+            alert("Có lỗi xảy ra khi thêm sản phẩm!");
         }
     };
 
@@ -99,15 +115,22 @@ export default function AddProduct() {
                     />
                 </div>
 
+                {/* Chỉnh sửa stock cho từng size */}
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700">Số Lượng</label>
-                    <input
-                        type="number"
-                        value={stock}
-                        onChange={(e) => setStock(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700">Số Lượng Theo Kích Thước</label>
+                    {["S", "M", "L", "XL"].map((size) => (
+                        <div key={size} className="flex items-center mb-2">
+                            <span className="w-16">{size}</span>
+                            <input
+                                type="number"
+                                value={stock[size]}
+                                onChange={(e) => handleStockChange(size, e.target.value)}
+                                className="w-full p-2 border border-gray-300 rounded-md"
+                                min="0"
+                                required
+                            />
+                        </div>
+                    ))}
                 </div>
 
                 <div className="mb-4">

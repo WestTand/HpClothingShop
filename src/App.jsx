@@ -14,6 +14,8 @@ import Admin from "./pages/admin";
 import AdminLogin from "./pages/adminLogin"; // Trang đăng nhập của Admin
 import Profile from "./pages/profile";
 import { AuthProvider } from "./context/AuthContext";
+import ProductDetail from "./pages/product"; // Import trang chi tiết sản phẩm
+
 function App() {
   return (
     <AuthProvider>
@@ -34,7 +36,8 @@ function App() {
                 {/* Thêm các route cho Admin */}
                 <Route path="/admin" element={<Admin />} />  {/* Trang Dashboard của Admin */}
                 <Route path="/admin/login" element={<AdminLogin />} />
-
+                {/* Route cho trang chi tiết sản phẩm */}
+                <Route path="/product/:id" element={<ProductDetail />} /> {/* Thêm route cho trang chi tiết sản phẩm */}
 
               </Routes>
             </main>
