@@ -1,123 +1,126 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { db } from "../config/firebase_config"; // Import Firestore
-import { doc, getDoc } from "firebase/firestore"; // Các hàm Firestore cần thiết
-import { useCart } from "../context/CartContext";
+import { doc, getDoc } from "firebase/firestore";
+import { useCart } from "../context/CartContext"; // Import CartContext
 
-export default function ProductDetail() {
-    const { id } = useParams(); // Lấy ID sản phẩm từ URL
+export default function Product() {
+    const { productId } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [selectedSize, setSelectedSize] = useState(""); // Lưu kích thước người dùng chọn
-    const { addToCart } = useCart(); // Lấy hàm addToCart từ context
-    const navigate = useNavigate(); // Dùng để chuyển hướng đến các trang khác
+    const [error, setError] = useState(null);
+    const [selectedSize, setSelectedSize] = useState(""); // State để lưu kích cỡ chọn
+    const { addToCart } = useCart(); // Lấy addToCart từ CartContext
 
+    // Lấy dữ liệu sản phẩm từ Firestore
     useEffect(() => {
-        // Lấy dữ liệu sản phẩm từ Firestore theo ID
         const fetchProduct = async () => {
             try {
-                const docRef = doc(db, "products", id); // Tham chiếu đến sản phẩm theo ID
+                const docRef = doc(db, "products", productId);
                 const docSnap = await getDoc(docRef);
-
                 if (docSnap.exists()) {
-                    setProduct(docSnap.data()); // Set dữ liệu sản phẩm vào state
+                    setProduct({ id: docSnap.id, ...docSnap.data() });
                 } else {
-                    console.log("No such product!");
+                    setError("Sản phẩm không tồn tại!");
                 }
-            } catch (error) {
-                console.error("Error fetching product: ", error);
+            } catch (err) {
+                setError("Lỗi khi tải sản phẩm: " + err.message);
             } finally {
-                setLoading(false); // Đặt trạng thái loading = false khi hoàn thành fetch
+                setLoading(false);
             }
         };
-
         fetchProduct();
-    }, [id]);
+    }, [productId]);
 
-    if (loading) {
-        return <div>Loading...</div>; // Hiển thị loading nếu chưa lấy được sản phẩm
-    }
-
-    if (!product) {
-        return <div>Product not found!</div>; // Nếu không tìm thấy sản phẩm
-    }
-
-    // Lấy danh sách các kích thước từ sản phẩm (sizes là một mảng chứa thông tin về stock)
-    const sizes = product.stock || []; // Nếu stock là mảng, lấy nó từ product
-
-    const handleAddToCart = () => {
-        // Kiểm tra xem kích thước đã được chọn hay chưa
-        if (!selectedSize) {
-            alert("Vui lòng chọn kích thước!");
+    // Xử lý khi chọn kích cỡ
+    const handleSizeChange = (size) => {
+        const stockItem = product.stock.find((item) => item.size === size);
+        if (stockItem.quantity === "0") {
+            alert("Kích cỡ này đã hết hàng!");
             return;
         }
-
-        // Tìm sản phẩm với kích thước đã chọn
-        const selectedProduct = { ...product, selectedSize };
-        addToCart(selectedProduct); // Thêm sản phẩm vào giỏ hàng
+        setSelectedSize(size);
     };
 
+    // Xử lý thêm vào giỏ hàng
+    const handleAddToCart = () => {
+        if (!selectedSize) {
+            alert("Vui lòng chọn kích cỡ!");
+            return;
+        }
+        addToCart({ ...product, selectedSize });
+        alert(`${product.name} (Kích cỡ: ${selectedSize}) đã được thêm vào giỏ hàng!`);
+    };
+
+    if (loading) {
+        return <div className="text-center py-10">Đang tải...</div>;
+    }
+
+    if (error) {
+        return <div className="text-center py-10 text-red-600">{error}</div>;
+    }
+
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="flex flex-col lg:flex-row gap-8">
+        <div className="max-w-7xl mx-auto px-4 py-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Hình ảnh sản phẩm */}
-                <div className="lg:w-1/2 mb-8 lg:mb-0">
+                <div className="flex justify-center">
                     <img
-                        src={product.imageUrl || "/placeholder.svg?height=300&width=300"}
+                        src={product.imageUrl || "/placeholder.svg?height=400&width=400"}
                         alt={product.name}
-                        className="w-full h-auto object-cover rounded-lg shadow-lg"
+                        className="w-full max-w-md h-auto object-cover rounded-lg shadow-md"
                     />
                 </div>
 
                 {/* Thông tin sản phẩm */}
-                <div className="lg:w-1/2">
-                    <h2 className="text-3xl font-semibold text-gray-800 mb-4">{product.name}</h2>
-                    <p className="text-lg text-gray-600 mb-4">{product.description}</p>
+                <div className="space-y-4">
+                    <h1 className="text-3xl font-bold text-gray-800">{product.name}</h1>
+                    <p className="text-2xl font-semibold text-purple-600">{product.price.toLocaleString()} đ</p>
+                    <p className="text-gray-600"><strong>Danh mục:</strong> {product.category}</p>
+                    <p className="text-gray-600"><strong>Mô tả:</strong> {product.description}</p>
 
-                    <div className="flex items-center gap-4 mb-4">
-                        <span className="text-xl font-semibold text-purple-600">
-                            {product.price.toLocaleString()} đ
-                        </span>
-                        <span className="text-sm text-gray-500">
-                            Tồn kho: {sizes.reduce((acc, size) => acc + size.quantity, 0)} sản phẩm
-                        </span>
-                    </div>
-
-                    {/* Chọn kích thước */}
-                    <div className="mb-4">
-                        <label htmlFor="size" className="block text-gray-700">
-                            Chọn kích thước
-                        </label>
-                        <select
-                            id="size"
-                            className="mt-2 w-full p-2 border border-gray-300 rounded-md"
-                            value={selectedSize}
-                            onChange={(e) => setSelectedSize(e.target.value)} // Cập nhật khi chọn kích thước
-                        >
-                            <option value="">Chọn kích thước</option>
-                            {sizes.map((size) => (
-                                <option key={size.size} value={size.size}>
-                                    {size.size} (Tồn kho: {size.quantity})
-                                </option>
+                    {/* Chọn kích cỡ */}
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-800">Chọn kích cỡ:</h3>
+                        <div className="flex space-x-4 mt-2">
+                            {product.stock.map((item, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => handleSizeChange(item.size)}
+                                    disabled={item.quantity === "0"} // Disable nếu quantity = 0
+                                    className={`px-4 py-2 rounded-lg border ${item.quantity === "0"
+                                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                        : selectedSize === item.size
+                                            ? "bg-purple-600 text-white"
+                                            : "bg-white text-gray-800 hover:bg-purple-100"
+                                        }`}
+                                >
+                                    {item.size} ({item.quantity} cái)
+                                </button>
                             ))}
-                        </select>
+                        </div>
                     </div>
 
-                    {/* Nút Thêm vào giỏ hàng */}
-                    <div className="flex gap-4">
-                        <button
-                            onClick={handleAddToCart}
-                            className="w-full bg-purple-600 text-white py-3 rounded-md font-medium"
-                        >
-                            Thêm vào giỏ hàng
-                        </button>
-                        <button
-                            onClick={() => navigate(-1)} // Quay lại trang trước
-                            className="w-full bg-gray-300 text-gray-700 py-3 rounded-md font-medium"
-                        >
-                            Quay lại
-                        </button>
+                    {/* Tồn kho */}
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-800">Tồn kho:</h3>
+                        <ul className="list-disc pl-5">
+                            {product.stock.map((item, index) => (
+                                <li key={index} className="text-gray-600">
+                                    Kích cỡ {item.size}: {item.quantity} cái
+                                </li>
+                            ))}
+                        </ul>
                     </div>
+
+
+                    {/* Nút thêm vào giỏ hàng */}
+                    <button
+                        onClick={handleAddToCart}
+                        className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors"
+                    >
+                        Thêm vào giỏ hàng
+                    </button>
                 </div>
             </div>
         </div>

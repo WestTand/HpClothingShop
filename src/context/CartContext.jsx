@@ -24,38 +24,27 @@ export function CartProvider({ children }) {
     }, [cartItems]);
 
     const addToCart = (product) => {
-        const { selectedSize } = product;
-
-        // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa, kiểm tra cả theo kích thước
+        const { id, selectedSize } = product;
+        // Tìm item với cùng id và selectedSize
         const existingItem = cartItems.find(
-            (item) => item.id === product.id && item.selectedSize === selectedSize
+            (item) => item.id === id && item.selectedSize === selectedSize
         );
 
         if (existingItem) {
-            // Nếu sản phẩm đã tồn tại trong giỏ hàng, kiểm tra stock của sản phẩm
-            const updatedCart = cartItems.map((item) => {
-                if (item.id === product.id && item.selectedSize === selectedSize) {
-                    // Nếu stock còn, tăng số lượng trong giỏ hàng
-                    if (item.quantity < item.stock) {
-                        return { ...item, quantity: item.quantity + 1 };
-                    } else {
-                        alert("Sản phẩm đã hết hàng!");
-                        return item;
-                    }
-                }
-                return item;
-            });
-
-            setCartItems(updatedCart);
+            // Nếu đã có item với cùng id và size, tăng quantity
+            setCartItems((prevItems) =>
+                prevItems.map((item) =>
+                    item.id === id && item.selectedSize === selectedSize
+                        ? { ...item, quantity: item.quantity + 1 }
+                        : item
+                )
+            );
         } else {
-            // Nếu chưa có sản phẩm này trong giỏ hàng, thêm mới
-            const sizeInfo = product.stock.find((size) => size.size === selectedSize);
-            if (sizeInfo) {
-                setCartItems((prevItems) => [
-                    ...prevItems,
-                    { ...product, selectedSize, quantity: 1, stock: sizeInfo.quantity }, // Thêm sản phẩm mới với số lượng là 1
-                ]);
-            }
+            // Nếu chưa có, thêm mới với quantity: 1
+            setCartItems((prevItems) => [
+                ...prevItems,
+                { ...product, quantity: 1 }
+            ]);
         }
 
         setIsAdded(true);
