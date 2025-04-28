@@ -1,65 +1,60 @@
 "use client"
 
-import { useState } from "react"
-import { Link } from "react-router-dom"
-import { Eye, EyeOff } from "lucide-react"
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import { auth, db } from "../config/firebase_config";
+import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
-import { setPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
 
 export default function Login() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [rememberMe, setRememberMe] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  // Khi vào Login page, kiểm tra nếu đã đăng nhập thì chuyển thẳng về profile
+  useEffect(() => {
+    if (auth.currentUser) {
+      navigate("/profile");
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Set persistence theo rememberMe
       await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
-  
-      // Đăng nhập với email và password
+
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-  
-      // Lấy thông tin user từ Firestore
+
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
-  
+
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
-        console.log("User data:", userData);
-  
-        if (userData.role === "admin") {
-          alert("Xin chào Admin!");
-          navigate("/admin-dashboard"); // hoặc trang admin
-        } else if (userData.role === "user") {
-          alert("Đăng nhập thành công!");
-          navigate("/user-dashboard"); // hoặc trang user
-        } else {
-          alert("Không xác định vai trò người dùng!");
-        }
+        console.log("Thông tin người dùng:", userData);
+        // Sau khi login thành công, chuyển tới profile
+        navigate("/profile");
       } else {
         console.error("Không tìm thấy thông tin người dùng trong Firestore.");
       }
     } catch (error) {
-      console.error("Đăng nhập thất bại:", error.message);
+      console.error("Lỗi đăng nhập:", error.message);
       alert("Đăng nhập thất bại: " + error.message);
     }
   };
-  
-  
 
   return (
     <div className="container mx-auto px-4 py-12">
+      {/* --- Form login như trước --- */}
       <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center mb-6">Login to Your Account</h1>
 
         <form onSubmit={handleSubmit}>
+          {/* --- Các input email, password, remember me --- */}
+
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email Address
@@ -128,28 +123,6 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
-            </div>
-          </div>
-
-          <div className="mt-6 grid grid-cols gap-3">
-            <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-              <span className="sr-only">Sign in with Google</span>
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
-              </svg>
-            </button>
-
-
-          </div>
-        </div>
-
         <p className="mt-8 text-center text-sm text-gray-600">
           Don't have an account?{" "}
           <Link to="/register" className="font-medium text-purple-600 hover:text-purple-500">
@@ -158,5 +131,5 @@ export default function Login() {
         </p>
       </div>
     </div>
-  )
+  );
 }
