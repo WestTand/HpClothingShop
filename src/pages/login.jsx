@@ -36,10 +36,10 @@ export default function Login() {
         const userData = userDocSnap.data();
         if (userData.role === "admin") {
           alert("Xin chào Admin!");
-          navigate("/admin"); // hoặc trang admin
+          navigate("/admin", { state: { role: "admin" } }); // truyền role
         } else if (userData.role === "user") {
           alert("Đăng nhập thành công!");
-          navigate("/profile"); // hoặc trang user
+          navigate("/profile", { state: { role: "user" } }); // truyền role        
         } else {
           alert("Không xác định vai trò người dùng!");
         }
