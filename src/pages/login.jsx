@@ -3,18 +3,56 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Eye, EyeOff } from "lucide-react"
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../config/firebase_config";
+import { doc, getDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import { setPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Handle login logic here
-    console.log({ email, password, rememberMe })
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Set persistence theo rememberMe
+      await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+  
+      // Đăng nhập với email và password
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+  
+      // Lấy thông tin user từ Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+  
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        console.log("User data:", userData);
+  
+        if (userData.role === "admin") {
+          alert("Xin chào Admin!");
+          navigate("/admin-dashboard"); // hoặc trang admin
+        } else if (userData.role === "user") {
+          alert("Đăng nhập thành công!");
+          navigate("/user-dashboard"); // hoặc trang user
+        } else {
+          alert("Không xác định vai trò người dùng!");
+        }
+      } else {
+        console.error("Không tìm thấy thông tin người dùng trong Firestore.");
+      }
+    } catch (error) {
+      console.error("Đăng nhập thất bại:", error.message);
+      alert("Đăng nhập thất bại: " + error.message);
+    }
+  };
+  
+  
 
   return (
     <div className="container mx-auto px-4 py-12">
