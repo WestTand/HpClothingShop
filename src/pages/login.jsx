@@ -34,9 +34,15 @@ export default function Login() {
 
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
-        console.log("Thông tin người dùng:", userData);
-        // Sau khi login thành công, chuyển tới profile
-        navigate("/profile");
+        if (userData.role === "admin") {
+          alert("Xin chào Admin!");
+          navigate("/admin"); // hoặc trang admin
+        } else if (userData.role === "user") {
+          alert("Đăng nhập thành công!");
+          navigate("/profile"); // hoặc trang user
+        } else {
+          alert("Không xác định vai trò người dùng!");
+        }
       } else {
         console.error("Không tìm thấy thông tin người dùng trong Firestore.");
       }
