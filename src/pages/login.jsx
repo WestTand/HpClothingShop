@@ -39,7 +39,7 @@ export default function Login() {
           navigate("/admin"); // hoặc trang admin
         } else if (userData.role === "user") {
           alert("Đăng nhập thành công!");
-          navigate("/user-dashboard"); // hoặc trang user
+          navigate("/profile"); // hoặc trang user
         } else {
           alert("Không xác định vai trò người dùng!");
         }
