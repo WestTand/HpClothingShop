@@ -13,33 +13,36 @@ import Register from "./pages/register";
 import Admin from "./pages/admin";
 import AdminLogin from "./pages/adminLogin"; // Trang đăng nhập của Admin
 import Profile from "./pages/profile";
+import { AuthProvider } from "./context/AuthContext";
 function App() {
   return (
-    <CartProvider>
-      <Router>
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/womens-collection" element={<WomensCollection />} />
-              <Route path="/mens-collection" element={<MensCollection />} />
-              <Route path="/all-products" element={<AllProducts />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/profile" element={<Profile />} />
-              {/* Thêm các route cho Admin */}
-              <Route path="/admin" element={<Admin />} />  {/* Trang Dashboard của Admin */}
-              <Route path="/admin/login" element={<AdminLogin />} />
+    <AuthProvider>
+      <CartProvider>
+        <Router>
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/womens-collection" element={<WomensCollection />} />
+                <Route path="/mens-collection" element={<MensCollection />} />
+                <Route path="/all-products" element={<AllProducts />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/profile" element={<Profile />} />
+                {/* Thêm các route cho Admin */}
+                <Route path="/admin" element={<Admin />} />  {/* Trang Dashboard của Admin */}
+                <Route path="/admin/login" element={<AdminLogin />} />
 
 
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </Router>
-    </CartProvider>
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </Router>
+      </CartProvider>
+    </AuthProvider> // Bọc AuthProvider quanh Router
   );
 }
 
