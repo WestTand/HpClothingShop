@@ -1,105 +1,110 @@
-import React from 'react'
+import { useNavigate } from "react-router-dom";
 
-const terms = () => {
-    return (
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-            <h1 className="text-3xl font-bold text-center mb-8">Điều khoản dịch vụ</h1>
+export default function Terms() {
+  const navigate = useNavigate();
 
-            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h2 className="text-xl font-semibold mb-4">1. Giới thiệu</h2>
-                <p className="mb-3">
-                    Chào mừng bạn đến với website của chúng tôi. Trước khi bạn sử dụng website này, vui lòng đọc kỹ các điều khoản dịch vụ dưới đây.
-                    Bằng việc truy cập và sử dụng website này, bạn đồng ý tuân thủ và chịu ràng buộc bởi các điều khoản và điều kiện này.
-                </p>
-            </div>
+  return (
+    <div className="container px-4 py-8 mx-auto max-w-4xl">
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h1 className="text-3xl font-bold mb-6 text-[#8755f2]">
+          Điều khoản Dịch vụ
+        </h1>
 
-            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h2 className="text-xl font-semibold mb-4">2. Đăng ký tài khoản</h2>
-                <p className="mb-3">
-                    Để sử dụng đầy đủ các tính năng của website, bạn cần phải đăng ký tài khoản. Khi đăng ký, bạn đồng ý cung cấp thông tin chính xác và cập nhật.
-                </p>
-                <p className="mb-3">
-                    Bạn chịu trách nhiệm bảo mật thông tin tài khoản của mình, bao gồm mật khẩu, và chịu trách nhiệm cho tất cả các hoạt động diễn ra dưới tài khoản của bạn.
-                </p>
-                <p className="mb-3">
-                    Chúng tôi có quyền từ chối đăng ký, khóa hoặc xóa tài khoản của bạn nếu vi phạm điều khoản sử dụng.
-                </p>
-            </div>
+        <p className="text-gray-600 mb-4">
+          Chào mừng bạn đến với nền tảng của chúng tôi. Bằng việc sử dụng dịch vụ,
+          bạn đồng ý tuân thủ các Điều khoản Dịch vụ ("Điều khoản") dưới đây. Vui
+          lòng đọc kỹ.
+        </p>
 
-            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h2 className="text-xl font-semibold mb-4">3. Quy định mua hàng</h2>
-                <p className="mb-3">
-                    Khi đặt hàng trên website của chúng tôi, bạn cam kết rằng bạn đủ tuổi và có đầy đủ quyền hạn pháp lý để thực hiện giao dịch.
-                </p>
-                <p className="mb-3">
-                    Chúng tôi có quyền từ chối hoặc hủy đơn hàng của bạn vì bất kỳ lý do gì, bao gồm nhưng không giới hạn ở việc sản phẩm không còn hàng, phát hiện lỗi trong mô tả sản phẩm hoặc giá cả.
-                </p>
-            </div>
+        <h2 className="text-xl font-semibold mt-6 mb-2">
+          1. Chấp nhận Điều khoản
+        </h2>
+        <p className="text-gray-600 mb-4">
+          Khi sử dụng nền tảng, bạn xác nhận mình từ 18 tuổi trở lên và đồng ý
+          tuân thủ các Điều khoản này. Nếu không đồng ý, bạn không được sử dụng
+          dịch vụ.
+        </p>
 
-            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h2 className="text-xl font-semibold mb-4">4. Phương thức thanh toán</h2>
-                <p className="mb-3">
-                    Chúng tôi chấp nhận các phương thức thanh toán được liệt kê trên website. Bạn cam kết rằng thông tin thanh toán bạn cung cấp là chính xác và bạn được phép sử dụng phương thức thanh toán đó.
-                </p>
-                <p className="mb-3">
-                    Tất cả các giao dịch đều được bảo mật theo tiêu chuẩn ngành.
-                </p>
-            </div>
+        <h2 className="text-xl font-semibold mt-6 mb-2">
+          2. Sử dụng Dịch vụ
+        </h2>
+        <p className="text-gray-600 mb-4">
+          Bạn cam kết sử dụng dịch vụ chỉ cho các mục đích hợp pháp và tuân theo
+          Điều khoản. Bạn không được:
+        </p>
+        <ul className="list-disc pl-6 text-gray-600 mb-4">
+          <li>Tham gia vào các hoạt động bất hợp pháp.</li>
+          <li>Thử truy cập trái phép vào hệ thống hoặc mạng của chúng tôi.</li>
+          <li>Phát tán nội dung độc hại, như mã độc hoặc virus.</li>
+        </ul>
 
-            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h2 className="text-xl font-semibold mb-4">5. Chính sách giao hàng</h2>
-                <p className="mb-3">
-                    Chúng tôi sẽ giao hàng đến địa chỉ mà bạn cung cấp khi đặt hàng. Thời gian giao hàng có thể thay đổi tùy theo khu vực và các yếu tố khác.
-                </p>
-                <p className="mb-3">
-                    Chúng tôi không chịu trách nhiệm cho bất kỳ sự chậm trễ nào do thông tin giao hàng không chính xác hoặc các yếu tố ngoài tầm kiểm soát của chúng tôi.
-                </p>
-            </div>
+        <h2 className="text-xl font-semibold mt-6 mb-2">
+          3. Trách nhiệm Tài khoản
+        </h2>
+        <p className="text-gray-600 mb-4">
+          Bạn chịu trách nhiệm bảo mật thông tin đăng nhập tài khoản. Mọi hoạt
+          động dưới tài khoản của bạn thuộc trách nhiệm của bạn. Vui lòng thông
+          báo ngay nếu nghi ngờ tài khoản bị sử dụng trái phép.
+        </p>
 
-            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h2 className="text-xl font-semibold mb-4">6. Chính sách đổi trả</h2>
-                <p className="mb-3">
-                    Bạn có thể đổi trả sản phẩm trong vòng 7 ngày kể từ ngày nhận hàng nếu sản phẩm bị lỗi hoặc không đúng như mô tả.
-                </p>
-                <p className="mb-3">
-                    Để đổi trả, sản phẩm phải trong tình trạng nguyên vẹn, chưa qua sử dụng và còn đầy đủ bao bì, nhãn mác.
-                </p>
-            </div>
+        <h2 className="text-xl font-semibold mt-6 mb-2">
+          4. Quyền Sở hữu Trí tuệ
+        </h2>
+        <p className="text-gray-600 mb-4">
+          Tất cả nội dung trên nền tảng, bao gồm văn bản, hình ảnh, và logo, thuộc
+          sở hữu của chúng tôi hoặc đối tác cấp phép. Bạn không được sao chép,
+          phân phối, hoặc tạo sản phẩm phái sinh mà không có sự cho phép trước.
+        </p>
 
-            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h2 className="text-xl font-semibold mb-4">7. Bảo mật thông tin</h2>
-                <p className="mb-3">
-                    Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn. Thông tin của bạn sẽ được sử dụng phù hợp với Chính sách Bảo mật của chúng tôi.
-                </p>
-            </div>
+        <h2 className="text-xl font-semibold mt-6 mb-2">
+          5. Chấm dứt Dịch vụ
+        </h2>
+        <p className="text-gray-600 mb-4">
+          Chúng tôi có thể tạm ngưng hoặc chấm dứt quyền truy cập của bạn nếu bạn
+          vi phạm Điều khoản hoặc có hành vi gây hại đến nền tảng hoặc người dùng
+          khác.
+        </p>
 
-            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h2 className="text-xl font-semibold mb-4">8. Thay đổi điều khoản</h2>
-                <p className="mb-3">
-                    Chúng tôi có quyền sửa đổi các điều khoản này vào bất kỳ lúc nào. Chúng tôi sẽ thông báo cho bạn về những thay đổi đáng kể bằng cách đăng thông báo trên website.
-                </p>
-                <p className="mb-3">
-                    Việc bạn tiếp tục sử dụng dịch vụ sau khi thay đổi được thực hiện đồng nghĩa với việc bạn chấp nhận các điều khoản mới.
-                </p>
-            </div>
+        <h2 className="text-xl font-semibold mt-6 mb-2">
+          6. Giới hạn Trách nhiệm
+        </h2>
+        <p className="text-gray-600 mb-4">
+          Dịch vụ được cung cấp "nguyên trạng" mà không có bất kỳ bảo đảm nào.
+          Chúng tôi không chịu trách nhiệm cho bất kỳ thiệt hại nào phát sinh từ
+          việc sử dụng dịch vụ, bao gồm thiệt hại trực tiếp, gián tiếp, hoặc hậu
+          quả.
+        </p>
 
-            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h2 className="text-xl font-semibold mb-4">9. Liên hệ</h2>
-                <p className="mb-3">
-                    Nếu bạn có bất kỳ câu hỏi nào về các điều khoản này, vui lòng liên hệ với chúng tôi qua:
-                </p>
-                <p className="mb-3">
-                    Email: support@example.com<br />
-                    Điện thoại: 0123 456 789<br />
-                    Địa chỉ: 123 Đường ABC, Quận XYZ, Thành phố HCM
-                </p>
-            </div>
+        <h2 className="text-xl font-semibold mt-6 mb-2">
+          7. Thay đổi Điều khoản
+        </h2>
+        <p className="text-gray-600 mb-4">
+          Chúng tôi có thể cập nhật Điều khoản này theo thời gian. Bạn sẽ được
+          thông báo về các thay đổi quan trọng qua email hoặc trên nền tảng. Việc
+          tiếp tục sử dụng dịch vụ đồng nghĩa với việc chấp nhận Điều khoản mới.
+        </p>
 
-            <div className="text-center text-gray-600 mt-8">
-                <p>Cập nhật lần cuối: Tháng 04/2025</p>
-            </div>
+        <h2 className="text-xl font-semibold mt-6 mb-2">8. Liên hệ</h2>
+        <p className="text-gray-600 mb-4">
+          Nếu bạn có câu hỏi về Điều khoản, vui lòng liên hệ qua{" "}
+          <a
+            href="mailto:support@example.com"
+            className="text-[#8755f2] hover:underline"
+          >
+            support@example.com
+          </a>
+          .
+        </p>
+
+        <div className="mt-8">
+          <button
+            onClick={() => navigate(-1)}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded"
+          >
+            Quay lại
+          </button>
         </div>
-    )
+      </div>
+    </div>
+  );
 }
-
-export default terms

@@ -38,10 +38,10 @@ export default function Footer() {
                 <Link >Careers</Link>
               </li>
               <li>
-                <Link >Terms & Conditions</Link>
+                <Link to="/terms" >Terms & Conditions</Link>
               </li>
               <li>
-                <Link >Privacy Policy</Link>
+                <Link to="/privacy">Privacy Policy</Link>
               </li>
             </ul>
           </div>
