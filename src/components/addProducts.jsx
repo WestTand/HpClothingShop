@@ -160,8 +160,13 @@ export default function AddProduct() {
                         onChange={(e) => setCategory(e.target.value)}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     >
-                        <option value="Áo">Áo</option>
-                        <option value="Quần">Quần</option>
+                        <option value="Áo Nam">Áo Nam</option>
+                        <option value="Quần Nam">Quần Nam</option>
+                        <option value="Giày Nam">Giày Nam</option>
+                        <option value="Áo Nữ">Áo Nữ</option>
+                        <option value="Quần Nữ">Quần Nữ</option>
+                        <option value="Giày Nữ">Giày Nữ</option>
+
                         {/* Thêm các danh mục khác nếu cần */}
                     </select>
                 </div>

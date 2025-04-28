@@ -12,11 +12,13 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
     "axios": "^1.9.0",
+    "chart.js": "^4.4.9",
     "cloudinary": "^2.6.0",
     "firebase": "^11.6.1",
     "lucide-react": "^0.488.0",
     "my-app": "file:",
     "react": "^19.0.0",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.5.1",
     "tailwindcss": "^4.1.4"
