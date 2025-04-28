@@ -1,48 +1,70 @@
 import CartItem from "../components/cart-item";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { db } from "../config/firebase_config"; // Import Firestore
-import { collection, addDoc, Timestamp, doc, updateDoc } from "firebase/firestore"; // Import các hàm cần thiết từ Firestore
+import { useNavigate } from "react-router-dom";
+import { db } from "../config/firebase_config";
+import { collection, addDoc, Timestamp, doc, updateDoc, getDoc } from "firebase/firestore";
 
 export default function Cart() {
-  const { cartItems, setCartItems } = useCart(); // Thêm setCartItems từ context
+  const { cartItems, setCartItems } = useCart();
   const { currentUser, loading } = useAuth();
-  const navigate = useNavigate();  // Khởi tạo useNavigate
+  const navigate = useNavigate();
 
-  // Nếu đang tải thông tin người dùng, hiển thị loading
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  // Tính tiền
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const shipping = 10000; // Tùy chọn phí vận chuyển
+  const shipping = 10000;
   const total = subtotal + shipping;
 
   const handleCheckout = async () => {
     if (!currentUser) {
       alert("Vui lòng đăng nhập để thanh toán!");
-      navigate("/login");  // Chuyển hướng đến trang đăng nhập
+      navigate("/login");
       return;
+    }
+
+    // Validate stock trước khi tạo đơn hàng
+    for (const item of cartItems) {
+      if (item.selectedSize) {
+        const productRef = doc(db, "products", item.id);
+        const productSnap = await getDoc(productRef);
+        if (productSnap.exists()) {
+          const productData = productSnap.data();
+          if (!Array.isArray(productData.stock)) {
+            alert(`Sản phẩm ${item.name} có dữ liệu tồn kho không hợp lệ!`);
+            return;
+          }
+          const stockItem = productData.stock.find((s) => s.size === item.selectedSize);
+          if (!stockItem || parseInt(stockItem.quantity) < item.quantity) {
+            alert(`Kích cỡ ${item.selectedSize} của ${item.name} không đủ tồn kho!`);
+            return;
+          }
+        } else {
+          alert(`Sản phẩm ${item.name} không tồn tại!`);
+          return;
+        }
+      }
     }
 
     // Tạo order object
     const order = {
-      userId: currentUser.uid,  // ID của người dùng
-      items: cartItems.map(item => ({
+      userId: currentUser.uid,
+      items: cartItems.map((item) => ({
         productId: item.id,
         name: item.name,
         price: item.price,
         quantity: item.quantity,
-        total: item.price * item.quantity
+        selectedSize: item.selectedSize || "N/A",
+        total: item.price * item.quantity,
       })),
       subtotal: subtotal,
       shipping: shipping,
       total: total,
-      status: "pending",  // Trạng thái đơn hàng
-      createdAt: Timestamp.fromDate(new Date()), // Thời gian tạo đơn hàng
-      updatedAt: Timestamp.fromDate(new Date())
+      status: "pending",
+      createdAt: Timestamp.fromDate(new Date()),
+      updatedAt: Timestamp.fromDate(new Date()),
     };
 
     try {
@@ -50,22 +72,33 @@ export default function Cart() {
       const docRef = await addDoc(collection(db, "orders"), order);
       console.log("Order added with ID: ", docRef.id);
 
-      // Cập nhật stock cho từng sản phẩm trong giỏ hàng
+      // Cập nhật stock
       for (const item of cartItems) {
-        const productRef = doc(db, "products", item.id); // Tham chiếu đến sản phẩm
-        await updateDoc(productRef, {
-          stock: item.stock - item.quantity  // Giảm số lượng tồn kho
-        });
+        if (item.selectedSize) {
+          const productRef = doc(db, "products", item.id);
+          const productSnap = await getDoc(productRef);
+          if (productSnap.exists()) {
+            const productData = productSnap.data();
+            const updatedStock = productData.stock.map((stockItem) =>
+              stockItem.size === item.selectedSize
+                ? {
+                  ...stockItem,
+                  quantity: Math.max(0, parseInt(stockItem.quantity) - item.quantity).toString(),
+                }
+                : stockItem
+            );
+            await updateDoc(productRef, { stock: updatedStock });
+          }
+        }
       }
 
-      // Sau khi tạo đơn hàng và cập nhật stock, xóa các sản phẩm trong giỏ hàng
-      setCartItems([]);  // Xóa giỏ hàng
-
-      // Sau khi hoàn tất, chuyển hướng tới trang "Thank You" hoặc trang thanh toán
+      // Xóa giỏ hàng
+      setCartItems([]);
       alert("Đơn hàng của bạn đã được ghi nhận!");
-      navigate("/thank-you");  // Chuyển hướng đến trang cảm ơn (hoặc trang thanh toán)
+      navigate("/thank-you");
     } catch (error) {
       console.error("Error adding order: ", error);
+      alert("Có lỗi xảy ra khi xử lý đơn hàng!");
     }
   };
 
@@ -79,7 +112,10 @@ export default function Cart() {
             <p>Giỏ hàng trống 😭</p>
           ) : (
             cartItems.map((item) => (
-              <CartItem key={item.id} item={item} />
+              <CartItem
+                key={`${item.id}-${item.selectedSize || "no-size"}`}
+                item={item}
+              />
             ))
           )}
         </div>
@@ -103,7 +139,7 @@ export default function Cart() {
           </div>
 
           <button
-            onClick={handleCheckout}  // Thêm hàm kiểm tra đăng nhập và lưu đơn hàng
+            onClick={handleCheckout}
             className="w-full bg-purple-600 text-white py-3 rounded-md font-medium"
           >
             Proceed to Checkout

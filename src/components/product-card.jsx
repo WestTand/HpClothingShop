@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
-import { useCart } from "../context/CartContext";
 
 export default function ProductCard({ product }) {
-  const { addToCart } = useCart();
+
   return (
     <div className="group rounded-lg overflow-hidden shadow-lg bg-white transform transition-transform duration-300">
       <div className="relative aspect-square bg-gray-100 mb-4 overflow-hidden rounded-t-lg">
@@ -19,13 +18,7 @@ export default function ProductCard({ product }) {
         <p className="text-xl font-semibold text-purple-600">{product.price} đ</p>
       </Link>
 
-      {/* Thêm vào giỏ hàng */}
-      <button
-        onClick={() => addToCart(product)}
-        className="w-full bg-purple-600 text-white py-2 mt-4"
-      >
-        Thêm vào giỏ
-      </button>
+
     </div>
   );
 }

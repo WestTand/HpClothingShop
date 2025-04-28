@@ -24,16 +24,27 @@ export function CartProvider({ children }) {
     }, [cartItems]);
 
     const addToCart = (product) => {
-        const existingItem = cartItems.find(item => item.id === product.id);
+        const { id, selectedSize } = product;
+        // Tìm item với cùng id và selectedSize
+        const existingItem = cartItems.find(
+            (item) => item.id === id && item.selectedSize === selectedSize
+        );
 
         if (existingItem) {
-            setCartItems(prevItems =>
-                prevItems.map(item =>
-                    item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+            // Nếu đã có item với cùng id và size, tăng quantity
+            setCartItems((prevItems) =>
+                prevItems.map((item) =>
+                    item.id === id && item.selectedSize === selectedSize
+                        ? { ...item, quantity: item.quantity + 1 }
+                        : item
                 )
             );
         } else {
-            setCartItems(prevItems => [...prevItems, { ...product, quantity: 1 }]);
+            // Nếu chưa có, thêm mới với quantity: 1
+            setCartItems((prevItems) => [
+                ...prevItems,
+                { ...product, quantity: 1 }
+            ]);
         }
 
         setIsAdded(true);
