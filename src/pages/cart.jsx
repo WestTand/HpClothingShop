@@ -1,12 +1,12 @@
 import CartItem from "../components/cart-item";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";  // Import useNavigate
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { db } from "../config/firebase_config"; // Import Firestore
 import { collection, addDoc, Timestamp, doc, updateDoc } from "firebase/firestore"; // Import các hàm cần thiết từ Firestore
 
 export default function Cart() {
-  const { cartItems } = useCart();
+  const { cartItems, setCartItems } = useCart(); // Thêm setCartItems từ context
   const { currentUser, loading } = useAuth();
   const navigate = useNavigate();  // Khởi tạo useNavigate
 
@@ -58,7 +58,10 @@ export default function Cart() {
         });
       }
 
-      // Sau khi tạo đơn hàng và cập nhật stock, chuyển hướng tới trang "Thank You" hoặc trang thanh toán
+      // Sau khi tạo đơn hàng và cập nhật stock, xóa các sản phẩm trong giỏ hàng
+      setCartItems([]);  // Xóa giỏ hàng
+
+      // Sau khi hoàn tất, chuyển hướng tới trang "Thank You" hoặc trang thanh toán
       alert("Đơn hàng của bạn đã được ghi nhận!");
       navigate("/thank-you");  // Chuyển hướng đến trang cảm ơn (hoặc trang thanh toán)
     } catch (error) {

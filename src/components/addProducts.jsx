@@ -15,13 +15,13 @@ export default function AddProduct() {
         const file = event.target.files[0];
         const formData = new FormData();
         formData.append("file", file);  // Thêm tệp vào FormData
-        formData.append("upload_preset", "ml_default"); // Thay "your_upload_preset" bằng preset của bạn
-        formData.append("cloud_name", "deq1douln");  // Thay "your_cloud_name" bằng tên Cloud của bạn
+        formData.append("upload_preset", "ml_default"); 
+        formData.append("cloud_name", "deq1douln");  
 
         try {
             const response = await fetch("https://api.cloudinary.com/v1_1/deq1douln/image/upload", {
                 method: "POST",
-                body: formData,  // Gửi FormData chứa tệp hình ảnh
+                body: formData, 
             });
             const data = await response.json();
 
