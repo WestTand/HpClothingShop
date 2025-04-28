@@ -6,9 +6,12 @@ export default function AddProduct() {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState("");
-    const [stock, setStock] = useState({
-        S: 0, M: 0, L: 0, XL: 0, // Khởi tạo số lượng cho từng size
-    });
+    const [stock, setStock] = useState([
+        { size: "S", quantity: 0 },
+        { size: "M", quantity: 0 },
+        { size: "L", quantity: 0 },
+        { size: "XL", quantity: 0 },
+    ]); // Khởi tạo stock dưới dạng mảng
     const [imageUrl, setImageUrl] = useState(""); // Lưu trữ URL hình ảnh
     const [category, setCategory] = useState("Áo");
 
@@ -40,16 +43,17 @@ export default function AddProduct() {
 
     // Hàm cập nhật stock theo size
     const handleStockChange = (size, value) => {
-        setStock(prevStock => ({
-            ...prevStock,
-            [size]: value,
-        }));
+        setStock((prevStock) =>
+            prevStock.map((item) =>
+                item.size === size ? { ...item, quantity: value } : item
+            )
+        );
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!name || !description || !price || !Object.values(stock).some((value) => value > 0) || !imageUrl) {
+        if (!name || !description || !price || !stock.some((item) => item.quantity > 0) || !imageUrl) {
             alert("Vui lòng điền đầy đủ thông tin và đảm bảo có ít nhất một size có stock");
             return;
         }
@@ -70,7 +74,12 @@ export default function AddProduct() {
             setName("");  // Reset form sau khi thêm
             setDescription("");
             setPrice("");
-            setStock({ S: 0, M: 0, L: 0, XL: 0 });  // Reset stock cho các size
+            setStock([
+                { size: "S", quantity: 0 },
+                { size: "M", quantity: 0 },
+                { size: "L", quantity: 0 },
+                { size: "XL", quantity: 0 },
+            ]);  // Reset stock cho các size
             setImageUrl("");
             setCategory("Áo");
         } catch (error) {
@@ -118,12 +127,12 @@ export default function AddProduct() {
                 {/* Chỉnh sửa stock cho từng size */}
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">Số Lượng Theo Kích Thước</label>
-                    {["S", "M", "L", "XL"].map((size) => (
+                    {stock.map(({ size, quantity }) => (
                         <div key={size} className="flex items-center mb-2">
                             <span className="w-16">{size}</span>
                             <input
                                 type="number"
-                                value={stock[size]}
+                                value={quantity}
                                 onChange={(e) => handleStockChange(size, e.target.value)}
                                 className="w-full p-2 border border-gray-300 rounded-md"
                                 min="0"

@@ -42,8 +42,8 @@ export default function ProductDetail() {
         return <div>Product not found!</div>; // Nếu không tìm thấy sản phẩm
     }
 
-    // Kiểm tra xem product.stock có phải là một object không, nếu có thì chuyển nó thành mảng
-    const sizes = product.stock ? Object.entries(product.stock).map(([size, stock]) => ({ size, stock })) : [];
+    // Lấy danh sách các kích thước từ sản phẩm (sizes là một mảng chứa thông tin về stock)
+    const sizes = product.stock || []; // Nếu stock là mảng, lấy nó từ product
 
     const handleAddToCart = () => {
         // Kiểm tra xem kích thước đã được chọn hay chưa
@@ -52,13 +52,10 @@ export default function ProductDetail() {
             return;
         }
 
-        // Tìm sản phẩm có kích thước đã chọn
+        // Tìm sản phẩm với kích thước đã chọn
         const selectedProduct = { ...product, selectedSize };
         addToCart(selectedProduct); // Thêm sản phẩm vào giỏ hàng
     };
-
-    // Tính tổng tồn kho nếu product.stock là object
-    const totalStock = sizes.reduce((acc, size) => acc + size.stock, 0);
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -78,13 +75,19 @@ export default function ProductDetail() {
                     <p className="text-lg text-gray-600 mb-4">{product.description}</p>
 
                     <div className="flex items-center gap-4 mb-4">
-                        <span className="text-xl font-semibold text-purple-600">{product.price.toLocaleString()} đ</span>
-                        <span className="text-sm text-gray-500">Tồn kho: {totalStock} sản phẩm</span>
+                        <span className="text-xl font-semibold text-purple-600">
+                            {product.price.toLocaleString()} đ
+                        </span>
+                        <span className="text-sm text-gray-500">
+                            Tồn kho: {sizes.reduce((acc, size) => acc + size.quantity, 0)} sản phẩm
+                        </span>
                     </div>
 
                     {/* Chọn kích thước */}
                     <div className="mb-4">
-                        <label htmlFor="size" className="block text-gray-700">Chọn kích thước</label>
+                        <label htmlFor="size" className="block text-gray-700">
+                            Chọn kích thước
+                        </label>
                         <select
                             id="size"
                             className="mt-2 w-full p-2 border border-gray-300 rounded-md"
@@ -94,7 +97,7 @@ export default function ProductDetail() {
                             <option value="">Chọn kích thước</option>
                             {sizes.map((size) => (
                                 <option key={size.size} value={size.size}>
-                                    {size.size} (Tồn kho: {size.stock})
+                                    {size.size} (Tồn kho: {size.quantity})
                                 </option>
                             ))}
                         </select>
@@ -109,7 +112,7 @@ export default function ProductDetail() {
                             Thêm vào giỏ hàng
                         </button>
                         <button
-                            onClick={() => navigate(-1)}  // Quay lại trang trước
+                            onClick={() => navigate(-1)} // Quay lại trang trước
                             className="w-full bg-gray-300 text-gray-700 py-3 rounded-md font-medium"
                         >
                             Quay lại
