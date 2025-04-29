@@ -88,6 +88,49 @@ export default function AddProduct() {
         }
     };
 
+    //RANDOM DATA
+    const handleRandomAdd = async () => {
+        // Random dữ liệu
+        const randomNames = ["Áo Hoodie", "Áo Thun", "Quần Jeans", "Giày Sneaker", "Áo Khoác", "Quần Short"];
+        const randomDescriptions = [
+            "Sản phẩm chất lượng cao.",
+            "Thiết kế thời trang, hiện đại.",
+            "Chất liệu thoáng mát, bền bỉ.",
+            "Phù hợp với nhiều phong cách khác nhau.",
+            "Ưu đãi hấp dẫn cho mùa mới."
+        ];
+        const randomCategories = ["Áo Nam", "Quần Nam", "Giày Nam", "Áo Nữ", "Quần Nữ", "Giày Nữ"];
+    
+        const randomName = randomNames[Math.floor(Math.random() * randomNames.length)];
+        const randomDescription = randomDescriptions[Math.floor(Math.random() * randomDescriptions.length)];
+        const randomPrice = Math.floor(Math.random() * 500000) + 100000; // Giá từ 100k -> 600k
+        const randomStock = [
+            { size: "S", quantity: Math.floor(Math.random() * 20) },
+            { size: "M", quantity: Math.floor(Math.random() * 20) },
+            { size: "L", quantity: Math.floor(Math.random() * 20) },
+            { size: "XL", quantity: Math.floor(Math.random() * 20) },
+        ];
+        const randomImageUrl = "https://via.placeholder.com/150"; // Ảnh giả
+        const randomCategory = randomCategories[Math.floor(Math.random() * randomCategories.length)];
+    
+        try {
+            await addDoc(collection(db, "products"), {
+                name: randomName,
+                description: randomDescription,
+                price: randomPrice,
+                stock: randomStock,
+                imageUrl: randomImageUrl,
+                category: randomCategory,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+            alert(`Đã thêm sản phẩm random: ${randomName}`);
+        } catch (error) {
+            console.error("Lỗi khi thêm sản phẩm random: ", error);
+            alert("Có lỗi xảy ra khi thêm sản phẩm random!");
+        }
+    };
+
     return (
         <div className="container px-4 py-8 mx-auto">
             <h1 className="text-3xl font-bold mb-6">Thêm Sản Phẩm Mới</h1>
@@ -176,6 +219,12 @@ export default function AddProduct() {
                     className="bg-blue-500 text-white p-2 rounded-md"
                 >
                     Thêm Sản Phẩm
+                </button>
+                <button
+                    type="button"
+                    onClick={handleRandomAdd}
+                    className="bg-green-500 text-white p-2 rounded-md ml-4">
+                    Random Thêm Sản Phẩm
                 </button>
             </form>
         </div>
