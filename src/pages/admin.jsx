@@ -35,16 +35,25 @@ export default function Admin() {
                 }));
                 setProducts(productsData);
 
+                // Lấy customers để map userId sang firstName + lastName
+                const customersSnapshot = await getDocs(collection(db, "Customers"));
+                const customersMap = {};
+                customersSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    customersMap[doc.id] = `${data.lastName || ""} ${data.firstName || ""}`.trim() || "Unknown";
+                });
+
                 // Lấy orders
                 const ordersSnapshot = await getDocs(collection(db, "orders"));
                 const ordersData = ordersSnapshot.docs.map((doc) => {
                     const data = doc.data();
                     return {
                         id: doc.id,
-                        customer: data.customer || "Unknown",
+                        customerName: customersMap[data.userId] || data.userId || "Unknown", // Ghép firstName + lastName
                         date: data.createdAt?.toDate().toISOString().split("T")[0] || "N/A",
                         total: Number(data.total) || 0,
-                        status: data.status || "Pending",
+                        status: data.status || "pending",
+                        items: data.items || [],
                     };
                 });
                 setOrders(ordersData);
@@ -88,7 +97,7 @@ export default function Admin() {
                 <div className="flex-1 bg-white p-6 rounded-lg shadow">
                     {activeTab === "dashboard" && <DashboardOverview products={products} orders={orders} />}
                     {activeTab === "products" && <AddProduct />}
-                    {activeTab === "orders" && <OrdersManagement orders={orders} />}
+                    {activeTab === "orders" && <OrdersManagement orders={orders} setOrders={setOrders} />}
                     {activeTab === "users" && <div>Users Management (To be implemented)</div>}
                 </div>
             </div>
