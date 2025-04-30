@@ -18,6 +18,7 @@ import Product from "./pages/product"; // Trang chi tiết sản phẩm
 import Terms from "./pages/terms"; // Trang điều khoản
 import Privacy from "./pages/privacy"; // Trang chính sách bảo mật
 import BackToTopButton from "./components/backToTopButton"
+import AboutUs from "./pages/aboutus";
 function App() {
   return (
     <AuthProvider>
@@ -41,6 +42,7 @@ function App() {
                 <Route path="/product/:productId" element={<Product />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
+                <Route path="/about" element={<AboutUs />} />
               </Routes>
             </main>
             <Footer />
