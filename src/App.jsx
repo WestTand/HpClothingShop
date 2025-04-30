@@ -17,6 +17,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Product from "./pages/product"; // Trang chi tiết sản phẩm
 import Terms from "./pages/terms"; // Trang điều khoản
 import Privacy from "./pages/privacy"; // Trang chính sách bảo mật
+import BackToTopButton from "./components/backToTopButton"
 function App() {
   return (
     <AuthProvider>
@@ -43,6 +44,7 @@ function App() {
               </Routes>
             </main>
             <Footer />
+            <BackToTopButton />
           </div>
         </Router>
       </CartProvider>
