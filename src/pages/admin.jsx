@@ -36,7 +36,7 @@ export default function Admin() {
                 setProducts(productsData);
 
                 // Lấy customers để map userId sang firstName + lastName
-                const customersSnapshot = await getDocs(collection(db, "Customers"));
+                const customersSnapshot = await getDocs(collection(db, "users"));
                 const customersMap = {};
                 customersSnapshot.forEach((doc) => {
                     const data = doc.data();
