@@ -22,13 +22,12 @@ export default function FilterSidebar({ filters, setFilters }) {
 
   return (
     <div className="w-full md:w-64 flex-shrink-0">
-      <h2 className="font-bold mb-4">All Products</h2>
 
       <div className="space-y-6">
         <div>
           <h3 className="font-medium mb-2">Categories</h3>
           <ul className="space-y-1 text-sm">
-            {["Men", "Women", "Accessories"].map(c => (
+            {["Men", "Women"].map(c => (
               <li key={c}>{createCheckbox("category", c)}</li>
             ))}
           </ul>

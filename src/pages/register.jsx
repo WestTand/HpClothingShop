@@ -22,6 +22,7 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [errors, setErrors] = useState({})
+  const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -66,62 +67,67 @@ export default function Register() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newErrors = validate();
-
+    e.preventDefault()
+    const newErrors = validate()
+  
     if (Object.keys(newErrors).length === 0) {
+      setLoading(true) // ✅ bắt đầu loading
       try {
-        // Tạo người dùng với email và mật khẩu
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           formData.email,
           formData.password
-        );
-        const user = userCredential.user;
-        console.log("Tạo tài khoản thành công:", user);
-
-        // Lưu thông tin người dùng vào Firestore
+        )
+        const user = userCredential.user
+        console.log("Tạo tài khoản thành công:", user)
+  
         await setDoc(doc(db, "users", user.uid), {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-          role: "user", // Bạn có thể thay đổi giá trị role nếu cần
-        });
-
-        alert("Đăng ký tài khoản thành công!");
-        navigate("/login"); // Điều hướng người dùng đến trang đăng nhập sau khi đăng ký
+          role: "user",
+        })
+  
+        alert("Đăng ký tài khoản thành công!")
+        navigate("/login")
       } catch (error) {
-        console.error("Lỗi khi tạo tài khoản:", error);
-        setErrors({ firebase: "Email đã tồn tại hoặc có lỗi xảy ra!" });
+        console.error("Lỗi khi tạo tài khoản:", error)
+        setErrors({ firebase: "Email đã tồn tại hoặc có lỗi xảy ra!" })
+      } finally {
+        setLoading(false) // ✅ kết thúc loading
       }
     } else {
-      setErrors(newErrors);
+      setErrors(newErrors)
     }
-  };
+  }
+  
 
   // Hàm đăng ký với Google
   // Hàm đăng ký với Google
   const handleGoogleSignUp = async () => {
+    setLoading(true) // ✅ bắt đầu loading
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      console.log("Đăng ký với Google thành công:", user);
-
-      // Lưu thông tin người dùng vào Firestore
+      const result = await signInWithPopup(auth, googleProvider)
+      const user = result.user
+      console.log("Đăng ký với Google thành công:", user)
+  
       await setDoc(doc(db, "users", user.uid), {
-        firstName: user.displayName?.split(" ")[0] || "NoFirstName", // Lấy phần đầu của displayName làm firstName
-        lastName: user.displayName?.split(" ")[1] || "NoLastName", // Lấy phần sau của displayName làm lastName
+        firstName: user.displayName?.split(" ")[0] || "NoFirstName",
+        lastName: user.displayName?.split(" ")[1] || "NoLastName",
         email: user.email,
-        role: "user", // Bạn có thể thay đổi giá trị role nếu cần
-      });
-
-      alert("Đăng ký với Google thành công!");
-      navigate("/login"); // Điều hướng người dùng đến trang đăng nhập sau khi đăng ký
+        role: "user",
+      })
+  
+      alert("Đăng ký với Google thành công!")
+      navigate("/login")
     } catch (error) {
-      console.error("Lỗi khi đăng ký với Google:", error);
-      setErrors({ firebase: "Đăng ký với Google thất bại!" });
+      console.error("Lỗi khi đăng ký với Google:", error)
+      setErrors({ firebase: "Đăng ký với Google thất bại!" })
+    } finally {
+      setLoading(false) // ✅ kết thúc loading
     }
-  };
+  }
+  
 
 
   return (
@@ -259,11 +265,13 @@ export default function Register() {
           </div>
 
           <button
-            type="submit"
-            className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-          >
-            Đăng ký
-          </button>
+  type="submit"
+  className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+  disabled={loading} // ✅ disable khi loading
+>
+  {loading ? "Đang đăng ký..." : "Đăng ký"} {/* ✅ text đổi theo trạng thái */}
+</button>
+
 
           {errors.firebase && <p className="mt-2 text-sm text-red-500 text-center">{errors.firebase}</p>}
         </form>
@@ -280,15 +288,37 @@ export default function Register() {
           </div>
 
           <div className="mt-6 grid grid-cols gap-3">
-            <button
-              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-              onClick={handleGoogleSignUp}
-            >
-              <span className="sr-only">Đăng ký với Google</span>
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
-              </svg>
-            </button>
+          <button
+  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+  onClick={handleGoogleSignUp}
+  disabled={loading} // ✅ disable khi loading
+>
+  <span className="sr-only">Đăng ký với Google</span>
+
+  {loading ? (
+    <svg className="w-5 h-5 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24">
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      ></circle>
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v8z"
+      ></path>
+    </svg>
+  ) : (
+    // Google icon như cũ
+    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+    </svg>
+  )}
+</button>
+
           </div>
         </div>
 

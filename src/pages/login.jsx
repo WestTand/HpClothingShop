@@ -13,6 +13,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   // Khi vào Login page, kiểm tra nếu đã đăng nhập thì chuyển thẳng về profile
   useEffect(() => {
@@ -23,23 +24,24 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // ✅ bắt đầu loading
     try {
       await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
-
+  
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+  
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
-
+  
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
         if (userData.role === "admin") {
           alert("Xin chào Admin!");
-          navigate("/admin"); // hoặc trang admin
+          navigate("/admin");
         } else if (userData.role === "user") {
           alert("Đăng nhập thành công!");
-          navigate("/profile"); // hoặc trang user
+          navigate("/profile");
         } else {
           alert("Không xác định vai trò người dùng!");
         }
@@ -49,8 +51,11 @@ export default function Login() {
     } catch (error) {
       console.error("Lỗi đăng nhập:", error.message);
       alert("Đăng nhập thất bại: " + error.message);
+    } finally {
+      setLoading(false); // ✅ kết thúc loading
     }
   };
+  
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -122,11 +127,13 @@ export default function Login() {
           </div>
 
           <button
-            type="submit"
-            className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-          >
-            Sign In
-          </button>
+  type="submit"
+  className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+  disabled={loading} // ✅ disable nếu đang loading
+>
+  {loading ? "Signing In..." : "Sign In"} {/* ✅ thay đổi nội dung */}
+</button>
+
         </form>
 
         <p className="mt-8 text-center text-sm text-gray-600">
