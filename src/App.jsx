@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { CartProvider } from "./context/CartContext"; // Nhớ import cái này nè!!
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Navbar from "./components/navbar";
 import Footer from "./components/footer";
@@ -49,6 +51,7 @@ function App() {
             <BackToTopButton />
           </div>
         </Router>
+        <ToastContainer position="top-right" autoClose={1500} hideProgressBar={false} />
       </CartProvider>
     </AuthProvider> // Bọc AuthProvider quanh Router
   );

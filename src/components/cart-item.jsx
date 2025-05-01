@@ -1,11 +1,18 @@
 import { Trash2, Plus, Minus } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { toast } from "react-toastify";
 
 export default function CartItem({ item }) {
-  const { setCartItems } = useCart();
+  const { setCartItems, getStockQuantity } = useCart();
 
   // Xử lý tăng số lượng
-  const handleIncrease = () => {
+  const handleIncrease = async () => {
+    const stockQuantity = await getStockQuantity(item.id, item.selectedSize);
+    if (item.quantity >= stockQuantity) {
+      toast.error(`Chỉ còn ${stockQuantity} sản phẩm size ${item.selectedSize} trong kho!`);
+      return;
+    }
+
     setCartItems((prevItems) =>
       prevItems.map((i) =>
         i.id === item.id && i.selectedSize === item.selectedSize
@@ -37,6 +44,7 @@ export default function CartItem({ item }) {
         (i) => !(i.id === item.id && i.selectedSize === item.selectedSize)
       )
     );
+    toast.success("Đã xóa sản phẩm khỏi giỏ hàng!");
   };
 
   return (
