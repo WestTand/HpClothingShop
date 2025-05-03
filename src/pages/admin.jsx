@@ -6,6 +6,7 @@ import AdminSidebar from "../components/AdminSidebar";
 import DashboardOverview from "../components/DashboardOverview";
 import OrdersManagement from "../components/OrdersManagement";
 import AddProduct from "../components/addProducts";
+import ProductManager from "../components/productManager";
 
 export default function Admin() {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -96,7 +97,7 @@ export default function Admin() {
                 <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
                 <div className="flex-1 bg-white p-6 rounded-lg shadow">
                     {activeTab === "dashboard" && <DashboardOverview products={products} orders={orders} />}
-                    {activeTab === "products" && <AddProduct />}
+                    {activeTab === "products" && <AddProduct /> && <ProductManager/>}
                     {activeTab === "orders" && <OrdersManagement orders={orders} setOrders={setOrders} />}
                     {activeTab === "users" && <div>Users Management (To be implemented)</div>}
                 </div>
