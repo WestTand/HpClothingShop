@@ -13,7 +13,7 @@ export default function AddProduct() {
     { size: "XL", quantity: 0 },
   ]);
   const [imageUrl, setImageUrl] = useState("");
-  const [category, setCategory] = useState("Áo");
+  const [category, setCategory] = useState("Áo Nam");
   const [loading, setLoading] = useState(false);
 
   const handleImageUpload = async (event) => {
@@ -86,7 +86,7 @@ export default function AddProduct() {
         { size: "XL", quantity: 0 },
       ]);
       setImageUrl("");
-      setCategory("Áo");
+      setCategory("");
     } catch (error) {
       console.error("Error adding product:", error);
       alert("Có lỗi xảy ra khi thêm sản phẩm!");
@@ -205,6 +205,9 @@ export default function AddProduct() {
             <option value="Áo Nữ">Áo Nữ</option>
             <option value="Quần Nữ">Quần Nữ</option>
             <option value="Giày Nữ">Giày Nữ</option>
+            <option value="Áo Nam Nữ">Áo Unisex</option>
+            <option value="Quần Nam Nữ">Quần Unisex</option>
+            <option value="Giày Nam Nữ">Giày Unisex</option>
           </select>
         </div>
 
