@@ -75,7 +75,7 @@ export default function Product() {
                 {/* Thông tin sản phẩm */}
                 <div className="space-y-4">
                     <h1 className="text-3xl font-bold text-gray-800">{product.name}</h1>
-                    <p className="text-2xl font-semibold text-purple-600">{product.price.toLocaleString()} đ</p>
+                    <p className="text-2xl font-semibold text-purple-600">{product.price.toLocaleString("vi-VN")} đ</p>
                     <p className="text-gray-600"><strong>Danh mục:</strong> {product.category}</p>
                     <p className="text-gray-600"><strong>Mô tả:</strong> {product.description}</p>
 
