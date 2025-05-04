@@ -7,6 +7,7 @@ import DashboardOverview from "../components/DashboardOverview";
 import OrdersManagement from "../components/OrdersManagement";
 import AddProduct from "../components/addProducts";
 import ProductManager from "../components/productManager";
+import UsersManagement from "../components/UsersManagement";
 
 export default function Admin() {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -85,12 +86,6 @@ export default function Admin() {
         <div className="container px-4 py-8 mx-auto">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                <button
-                    onClick={handleLogout}
-                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded"
-                >
-                    Logout
-                </button>
             </div>
 
             <div className="flex flex-col md:flex-row gap-6">
@@ -99,7 +94,7 @@ export default function Admin() {
                     {activeTab === "dashboard" && <DashboardOverview products={products} orders={orders} />}
                     {activeTab === "products" && <AddProduct /> && <ProductManager />}
                     {activeTab === "orders" && <OrdersManagement orders={orders} setOrders={setOrders} />}
-                    {activeTab === "users" && <div>Users Management (To be implemented)</div>}
+                    {activeTab === "users" && <UsersManagement />}
                 </div>
             </div>
         </div>
