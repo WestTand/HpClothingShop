@@ -33,30 +33,37 @@ export default function AllProducts() {
   // ✅ Hàm lọc theo filter
   const applyFilters = (product) => {
     const { category, price, size } = filters;
-
-    // Category
+    const prodWords = product.category.toLowerCase().split(" ");
+  
+    // 1. Category: dùng cách tách từ để kiểm tra
     const matchCategory =
-  category.length === 0 ||
-  category.some(filter => {
-    if (filter === "Men") return product.category.toLowerCase().includes("nam");
-    if (filter === "Women") return product.category.toLowerCase().includes("nữ");
-    return false;
-  });
-
-    // Price
+      category.length === 0 ||
+      category.some(filter => {
+        const filterWords = filter.toLowerCase().split(" ");
+        // kiểm tra tất cả từ của filter có trong prodWords không
+        return filterWords.every(w => prodWords.includes(w));
+      });
+  
+    // 2. Price: giữ nguyên logic trước
     const priceNum = Number(product.price);
-    const matchPrice = price.length === 0 || price.some(range => {
-      if (range === "0-50") return priceNum <= 50;
-      if (range === "50-100") return priceNum > 50 && priceNum <= 100;
-      if (range === "100-200") return priceNum > 100 && priceNum <= 200;
-      if (range === "200+") return priceNum > 200;
-    });
-
-    // Size
-    const matchSize = size.length === 0 || product.stock.some(s => size.includes(s.size));
-
+    const matchPrice =
+      price.length === 0 ||
+      price.some(range => {
+        if (range === "0-50.000")           return priceNum <= 50000;
+        if (range === "50.000-100.000")    return priceNum > 50000  && priceNum <= 100000;
+        if (range === "100.000-200.000")   return priceNum > 100000 && priceNum <= 200000;
+        if (range === "200.000+")          return priceNum > 200000;
+      });
+  
+    // 3. Size: giữ nguyên
+    const matchSize =
+      size.length === 0 ||
+      product.stock.some(s => size.includes(s.size));
+  
     return matchCategory && matchPrice && matchSize;
   };
+  
+  
 
   const filteredProducts = products.filter(applyFilters);
 
