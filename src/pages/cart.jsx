@@ -3,7 +3,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { db } from "../config/firebase_config";
-import { collection, addDoc, Timestamp, doc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, Timestamp, doc, updateDoc, getDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 
 export default function Cart() {
@@ -20,7 +20,6 @@ export default function Cart() {
   const total = subtotal + shipping;
 
   const handleCheckout = async () => {
-    // Kiểm tra giỏ hàng rỗng
     if (cartItems.length === 0) {
       toast.error("Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi thanh toán.");
       return;
@@ -33,7 +32,6 @@ export default function Cart() {
     }
 
     try {
-      // Kiểm tra stock và thu thập stock cần cập nhật
       const stockUpdates = {};
       for (const item of cartItems) {
         if (item.selectedSize) {
@@ -47,7 +45,6 @@ export default function Cart() {
         }
       }
 
-      // Tạo order object
       const order = {
         userId: currentUser.uid,
         items: cartItems.map((item) => ({
@@ -66,11 +63,9 @@ export default function Cart() {
         updatedAt: Timestamp.fromDate(new Date()),
       };
 
-      // Thêm đơn hàng vào Firestore
       const docRef = await addDoc(collection(db, "orders"), order);
       console.log("Order added with ID: ", docRef.id);
 
-      // Cập nhật stock
       for (const [productId, { items }] of Object.entries(stockUpdates)) {
         const productRef = doc(db, "products", productId);
         const productSnap = await getDoc(productRef);
@@ -88,10 +83,9 @@ export default function Cart() {
         }
       }
 
-      // Xóa giỏ hàng
       setCartItems([]);
       toast.success("Đơn hàng của bạn đã được ghi nhận!");
-      navigate("/thank-you");
+      navigate("/thankyou", { state: { orderId: docRef.id } });
     } catch (error) {
       console.error("Error adding order: ", error);
       toast.error("Có lỗi xảy ra khi xử lý đơn hàng!");
