@@ -22,6 +22,8 @@ import Privacy from "./pages/privacy"; // Trang chính sách bảo mật
 import BackToTopButton from "./components/backToTopButton"
 import AboutUs from "./pages/aboutus";
 import ThankYou from "./pages/ThanhYou";
+import SearchPage from "./pages/SearchPage"; // Trang tìm kiếm sản phẩm
+import OrderDetail from "./pages/OrderDetail"; // Trang chi tiết đơn hàng
 function App() {
   return (
     <AuthProvider>
@@ -47,6 +49,8 @@ function App() {
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/thankyou" element={<ThankYou />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/order/:orderId" element={<OrderDetail />} />
               </Routes>
             </main>
             <Footer />
