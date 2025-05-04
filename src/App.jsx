@@ -21,6 +21,7 @@ import Terms from "./pages/terms"; // Trang điều khoản
 import Privacy from "./pages/privacy"; // Trang chính sách bảo mật
 import BackToTopButton from "./components/backToTopButton"
 import AboutUs from "./pages/aboutus";
+import ThankYou from "./pages/ThanhYou";
 function App() {
   return (
     <AuthProvider>
@@ -39,12 +40,13 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<Profile />} />
                 {/* Thêm các route cho Admin */}
-                <Route path="/admin" element={<Admin />} />  {/* Trang Dashboard của Admin */}
+                <Route path="/admin" element={<Admin />} />
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/product/:productId" element={<Product />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/about" element={<AboutUs />} />
+                <Route path="/thankyou" element={<ThankYou />} />
               </Routes>
             </main>
             <Footer />

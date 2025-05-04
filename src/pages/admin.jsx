@@ -97,7 +97,7 @@ export default function Admin() {
                 <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
                 <div className="flex-1 bg-white p-6 rounded-lg shadow">
                     {activeTab === "dashboard" && <DashboardOverview products={products} orders={orders} />}
-                    {activeTab === "products" && <AddProduct /> && <ProductManager/>}
+                    {activeTab === "products" && <AddProduct /> && <ProductManager />}
                     {activeTab === "orders" && <OrdersManagement orders={orders} setOrders={setOrders} />}
                     {activeTab === "users" && <div>Users Management (To be implemented)</div>}
                 </div>
