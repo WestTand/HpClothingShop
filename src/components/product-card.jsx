@@ -15,11 +15,10 @@ export default function ProductCard({ product }) {
       {/* Product Info */}
       <Link to={`/product/${product.id}`} className="block p-4">
         <h3 className="font-semibold text-lg text-gray-800 truncate">{product.name}</h3>
-        <p className="text-xl font-semibold text-purple-600">{product.price} đ</p>
+        <p className="text-xl font-semibold text-purple-600">
+          {product.price.toLocaleString("vi-VN")} đ
+        </p>
       </Link>
-
-
     </div>
   );
 }
-
