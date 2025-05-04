@@ -21,17 +21,15 @@ const SearchPage = () => {
     }, [searchQuery]);
 
     const fetchProducts = async (searchQuery) => {
+        setLoading(true);
         try {
-            const q = query(
-                collection(db, "products"),
-                where("name", ">=", searchQuery), // tìm các sản phẩm có tên bắt đầu bằng hoặc chứa từ khóa
-                where("name", "<=", searchQuery + "\uf8ff") // điều kiện để lọc các sản phẩm có tên bắt đầu bằng từ khóa
-            );
-            const querySnapshot = await getDocs(q);
-            const productsArray = querySnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
+            const querySnapshot = await getDocs(collection(db, "products"));
+            const lowerSearch = searchQuery.toLowerCase();
+            const productsArray = querySnapshot.docs
+                .map((doc) => ({ id: doc.id, ...doc.data() }))
+                .filter((product) =>
+                    product.name.toLowerCase().includes(lowerSearch)
+                );
             setProducts(productsArray);
         } catch (error) {
             console.error("Error fetching products:", error);
@@ -39,6 +37,7 @@ const SearchPage = () => {
             setLoading(false);
         }
     };
+    
 
     return (
         <div className="container mx-auto p-4">

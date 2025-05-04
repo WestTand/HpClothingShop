@@ -152,7 +152,7 @@ export default function FilterSidebar({ filters, setFilters }) {
       <div>
         <h3 className="font-medium mb-2">Price Range</h3>
         <ul className="space-y-1 text-sm">
-          {["0-50.000", "50.000-100.000", "100.000-200.000", "200.000+"].map((p) => (
+          {["0-100.000", "100.000-200.000", "200.000-300.000", "300.000-400.000","400.000+"].map((p) => (
             <li key={p}>{createCheckbox("price", p)}</li>
           ))}
         </ul>

@@ -49,10 +49,11 @@ export default function AllProducts() {
     const matchPrice =
       price.length === 0 ||
       price.some(range => {
-        if (range === "0-50.000")           return priceNum <= 50000;
-        if (range === "50.000-100.000")    return priceNum > 50000  && priceNum <= 100000;
-        if (range === "100.000-200.000")   return priceNum > 100000 && priceNum <= 200000;
-        if (range === "200.000+")          return priceNum > 200000;
+        if (range === "0-100.000")           return priceNum <= 100000;
+        if (range === "100.000-200.000")    return priceNum > 100000  && priceNum <= 200000;
+        if (range === "200.000-300.000")   return priceNum > 200000 && priceNum <= 300000;
+        if (range === "300.000-400.000")    return priceNum > 300000 && priceNum <= 400000;
+        if (range === "400.000+")          return priceNum > 400000;
       });
   
     // 3. Size: giữ nguyên

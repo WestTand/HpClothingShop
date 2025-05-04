@@ -1,17 +1,37 @@
-import { Link } from "react-router-dom"
-import ProductCard from "../components/product-card"
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { db } from "../config/firebase_config";
+import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+import ProductCard from "../components/product-card";
 
 export default function Home() {
-  const featuredProducts = [
-    { id: 1, name: "Product Name", price: "$99.99" },
-    { id: 2, name: "Product Name", price: "$99.99" },
-    { id: 3, name: "Product Name", price: "$99.99" },
-    { id: 4, name: "Product Name", price: "$99.99" },
-    { id: 5, name: "Product Name", price: "$99.99" },
-    { id: 6, name: "Product Name", price: "$99.99" },
-    { id: 7, name: "Product Name", price: "$99.99" },
-    { id: 8, name: "Product Name", price: "$99.99" },
-  ]
+  const [latestProducts, setLatestProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLatestProducts = async () => {
+      try {
+        const q = query(
+          collection(db, "products"),
+          orderBy("updatedAt", "desc"), // Sắp xếp theo updatedAt mới nhất
+          limit(8)
+        );
+        const querySnapshot = await getDocs(q);
+        const products = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setLatestProducts(products);
+      } catch (error) {
+        console.error("Error fetching latest products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+
+    fetchLatestProducts();
+  }, []);
 
   return (
     <div className="container mx-auto px-4">
@@ -24,22 +44,26 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Featured Products Section */}
+      {/* Latest Products Section */}
       <div className="mb-10">
-        <h2 className="text-xl font-semibold mb-6">Featured Products</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {featuredProducts.slice(0, 8).map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+      <h2 className="text-xl font-semibold mb-6">Sản phẩm mới nhất</h2>
+        {loading ? (
+          <p>Đang tải sản phẩm...</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {latestProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* View All Button */}
       <div className="text-center mb-16">
         <Link to="/all-products">
-          <button className="bg-purple-600 text-white px-6 py-2 rounded-md font-medium">View All</button>
+          <button className="bg-purple-600 text-white px-6 py-2 rounded-md font-medium">Xem tất cả</button>
         </Link>
       </div>
     </div>
-  )
+  );
 }

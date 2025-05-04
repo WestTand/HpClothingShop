@@ -86,6 +86,7 @@ export default function Register() {
           lastName: formData.lastName,
           email: formData.email,
           role: "user",
+          createdAt: new Date(),
         })
   
         alert("Đăng ký tài khoản thành công!")
