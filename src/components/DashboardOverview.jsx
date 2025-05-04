@@ -62,8 +62,8 @@ export default function DashboardOverview({ products, orders }) {
                 </div>
                 <div className="bg-purple-100 p-4 rounded-lg">
                     <h3 className="font-medium text-purple-800">Total Revenue</h3>
-                    <p className="text-2xl font-bold">
-                        ${orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
+                    <p className="text-2xl font-bold text-purple-900">
+                        {orders.reduce((sum, order) => sum + (order.total || 0), 0).toLocaleString("vi-VN")} đ
                     </p>
                 </div>
             </div>
